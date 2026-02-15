@@ -1,6 +1,7 @@
 // ============================================
 // REQUIRE MODULES
 // ============================================
+require('dotenv').config();                  // Load .env file variables into process.env
 const mongoose = require('mongoose');       // MongoDB ODM for database operations
 const express = require('express');          // Web framework for handling HTTP requests
 const app = express();                       // Create an Express application instance
@@ -237,12 +238,21 @@ io.on('connection', (socket) => {
 // START SERVER & CONNECT TO MONGODB
 // - Using server.listen (NOT app.listen) because
 //   socket.io needs the HTTP server, not just Express
+// - PORT: Render assigns its own port via environment variable
+// - MONGO_URL: Use MongoDB Atlas connection string in production
 // ============================================
-server.listen(3000, () => {
-    console.log('Server is running on http://localhost:3000');
+
+// Use the PORT from environment variable (Render sets this), or 3000 for local dev
+const PORT = process.env.PORT || 3000;
+
+// Use MONGO_URL from environment variable, or fallback to local MongoDB for development
+const MONGO_URL = process.env.MONGO_URL || 'mongodb://127.0.0.1:27017/whatsapp';
+
+server.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
 });
 
-// Connect to MongoDB database named "whatsapp"
+// Connect to MongoDB (Atlas in production, local in development)
 main()
     .then(() => {
         console.log('Connected to MongoDB');
@@ -252,7 +262,7 @@ main()
     });
 
 async function main() {
-    await mongoose.connect('mongodb://127.0.0.1:27017/whatsapp');
+    await mongoose.connect(MONGO_URL);
 }
 
 
