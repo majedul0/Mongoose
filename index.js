@@ -103,4 +103,10 @@ user11.save();
 
 module.exports = {
     User,
-};  
+};
+User.find().then((users)=>{
+    console.log(users);
+})
+.catch((err)=>{
+    console.error('Error fetching users', err);
+});
